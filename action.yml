@@ -18,6 +18,8 @@ runs:
       if: ${{ github.event_name == 'pull_request' }}
       run: |
         git checkout '${{github.event.pull_request.head.sha}}'
+        git config user.name "Actions Runner"
+        git config user.email "noreply@example.com"
         git merge --no-commit '${{github.base_ref}}'
     - name: Checkout for branches
       shell: bash
