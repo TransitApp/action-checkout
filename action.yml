@@ -1,0 +1,27 @@
+name: Clean checkout
+description: Clears workspace and checks out requested branch
+runs:
+  using: composite
+  steps:
+    - name: Cleanup workspace
+      run: |
+        rm -rf '${{github.workspace}}'
+    - name: Clone
+      working-directory: '${{runner.workspace}}'
+      run: |
+        git clone 'git@github.com:${{github.repository}}'
+    - name: Checkout
+      working-directory: '${{github.workspace}}'
+      run: |
+        git checkout '${{github.sha}}'
+    - name: Update
+      working-directory: '${{github.workspace}}'
+      if: ${{ github.event_name == 'pull_request' }}
+      run: |
+        git pull origin '${{github.base_ref}}'
+    - name: Update submodules
+      working-directory: '${{github.workspace}}'
+      run: |
+        git submodule update --init --recursive
+
+
