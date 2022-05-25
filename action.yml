@@ -32,5 +32,10 @@ runs:
       working-directory: '${{github.workspace}}'
       run: |
         git submodule update --init --recursive
+    - name: Fetch private actions
+      shell: bash
+      working-directory: '${{github.workspace}}'
+      run: |
+        git clone 'git@github.com:TransitApp/actions' '.github/actions'
 
 
