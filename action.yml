@@ -17,22 +17,14 @@ runs:
       working-directory: '${{github.workspace}}'
       run: |
         git remote add origin 'git@github.com:${{github.repository}}'
-    - name: Checkout for PRs
+    - name: Checkout branch or PR
       shell: bash
       working-directory: '${{github.workspace}}'
-      if: ${{ github.event_name == 'pull_request' }}
       run: |
         git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin '${{github.sha}}'
         git checkout --force '${{github.sha}}'
         git config user.name "Actions Runner"
         git config user.email "noreply@example.com"
-    - name: Checkout for branches
-      shell: bash
-      working-directory: '${{github.workspace}}'
-      if: ${{ github.event_name != 'pull_request' }}
-      run: |
-        git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin '${{github.sha}}'
-        git checkout --force '${{github.sha}}'
     - name: Update submodules
       shell: bash
       working-directory: '${{github.workspace}}'
