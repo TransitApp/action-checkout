@@ -7,31 +7,30 @@ runs:
       shell: bash
       run: |
         rm -rf '${{github.workspace}}'
-    - name: Clone
+    - name: Init
       shell: bash
       working-directory: '${{runner.workspace}}'
       run: |
-        git clone 'git@github.com:${{github.repository}}'
-    - name: Checkout for PRs
+        git init '${{github.workspace}}'
+    - name: Add origin
       shell: bash
       working-directory: '${{github.workspace}}'
-      if: ${{ github.event_name == 'pull_request' }}
       run: |
-        git checkout '${{github.event.pull_request.head.sha}}'
+        git remote add origin 'git@github.com:${{github.repository}}'
+    - name: Checkout branch or PR
+      shell: bash
+      working-directory: '${{github.workspace}}'
+      run: |
+        git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin '${{github.sha}}'
+        git checkout --force '${{github.sha}}'
         git config user.name "Actions Runner"
         git config user.email "noreply@example.com"
-        git merge --no-commit 'origin/${{github.base_ref}}'
-    - name: Checkout for branches
-      shell: bash
-      working-directory: '${{github.workspace}}'
-      if: ${{ github.event_name != 'pull_request' }}
-      run: |
-        git checkout '${{github.sha}}'
     - name: Update submodules
       shell: bash
       working-directory: '${{github.workspace}}'
       run: |
-        git submodule update --init --recursive
+        git submodule sync --recursive
+        git -c protocol.version=2 submodule update --init --force --depth=1 --recursive
     - name: Fetch private actions
       shell: bash
       working-directory: '${{github.workspace}}'
